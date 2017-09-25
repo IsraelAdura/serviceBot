@@ -159,3 +159,80 @@ var service = function () {
   }).join('\n');
   return services;
 }
+controller.hears('interactive', 'direct_message', function(bot, message) {
+  
+      bot.reply(message, {
+          attachments:[
+              {
+                  title: 'Do you want to interact with my buttons?',
+                  callback_id: '123',
+                  attachment_type: 'default',
+                  actions: [
+                      {
+                          "name":"yes",
+                          "text": "Yes",
+                          "value": "yes",
+                          "type": "button",
+                      },
+                      {
+                          "name":"no",
+                          "text": "No",
+                          "value": "no",
+                          "type": "button",
+                      }
+                  ]
+              }
+          ]
+      });
+  });
+
+  controller.hears('yes', ['direct_message', 'direct_mention', 'mention'], function (bot, message) {
+  bot.startConversation(message, function(err, convo) {
+    
+        convo.ask({
+            attachments:[
+                {
+                    title: 'Do you want to proceed?',
+                    callback_id: '123',
+                    attachment_type: 'default',
+                    actions: [
+                        {
+                            "name":"yes",
+                            "text": "Yes",
+                            "value": "yes",
+                            "type": "button",
+                        },
+                        {
+                            "name":"no",
+                            "text": "No",
+                            "value": "no",
+                            "type": "button",
+                        }
+                    ]
+                }
+            ]
+        },[
+            {
+                pattern: "yes",
+                callback: function(reply, convo) {
+                    convo.say('FABULOUS!');
+                    convo.next();
+                    // do something awesome here.
+                }
+            },
+            {
+                pattern: "no",
+                callback: function(reply, convo) {
+                    convo.say('Too bad');
+                    convo.next();
+                }
+            },
+            {
+                default: true,
+                callback: function(reply, convo) {
+                    // do nothing
+                }
+            }
+        ]);
+    });
+  });
